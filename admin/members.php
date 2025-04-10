@@ -38,9 +38,16 @@ if (isset($_POST['update'])) {
 
 if (isset($_GET['delete'])) {
     $id = $_GET['delete'];
-    mysqli_query($conn, "DELETE FROM members WHERE id=$id");
-    header("Location: members.php");
-    exit();
+
+    // Check if the member has any borrow history
+    $check = mysqli_query($conn, "SELECT * FROM borrowings WHERE member_id = $id");
+    if (mysqli_num_rows($check) > 0) {
+        echo "<script>alert('Cannot delete! This member has borrow history.'); window.location='members.php';</script>";
+    } else {
+        mysqli_query($conn, "DELETE FROM members WHERE id = $id");
+        header("Location: members.php");
+        exit();
+    }
 }
 ?>
 <!DOCTYPE html>
